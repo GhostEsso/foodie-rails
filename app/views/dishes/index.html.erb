@@ -1,10 +1,14 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <div class="mb-8">
-    <h1 class="text-3xl font-bold text-gray-900">Plats disponibles</h1>
-    <p class="mt-2 text-gray-600">Découvrez les délicieux plats proposés par vos voisins</p>
+  <!-- En-tête -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Plats disponibles</h1>
+      <p class="mt-1 text-sm text-gray-600">Découvrez les délicieux plats proposés par vos voisins.</p>
+    </div>
+    <%= link_to "Proposer un plat", new_dish_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600" %>
   </div>
 
-  <!-- Barre de recherche et filtres -->
+  <!-- Barre de recherche -->
   <div class="mb-8">
     <div class="flex flex-col md:flex-row gap-4">
       <!-- Barre de recherche -->
@@ -15,95 +19,137 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
             </svg>
           </div>
-          <input type="text" placeholder="Rechercher un plat..." class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-        </div>
-      </div>
-
-      <!-- Filtres -->
-      <div class="flex gap-4">
-        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-          <option>Tous les plats</option>
-          <option>Mes plats</option>
-          <option>Plats réservés</option>
-        </select>
-
-        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-          <option>Plus récents</option>
-          <option>Prix croissant</option>
-          <option>Prix décroissant</option>
-        </select>
-
-        <div class="flex gap-2">
-          <button class="px-4 py-2 text-gray-700 hover:text-gray-900">Réinitialiser</button>
-          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Appliquer</button>
+          <input type="text" 
+                 id="searchInput"
+                 placeholder="Rechercher par nom de plat ou ingrédients..." 
+                 class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Liste des plats -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-    <% @dishes.each do |dish| %>
-      <div class="bg-white rounded-lg shadow overflow-hidden">
-        <!-- Image placeholder -->
-        <div class="h-48 bg-gray-100 flex items-center justify-center">
-          <span class="text-gray-400">Pas d'image</span>
-        </div>
-
-        <div class="p-6">
-          <!-- En-tête avec portions -->
-          <div class="flex justify-between items-start mb-4">
-            <h2 class="text-xl font-semibold text-gray-900"><%= dish.name %></h2>
-            <div class="flex flex-col items-end">
-              <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
-                <%= pluralize(dish.available_portions, 'portion') %> disponible<%= dish.available_portions > 1 ? 's' : '' %>
-              </span>
-              <% if dish.pending_portions > 0 %>
-                <span class="text-yellow-600 text-xs mt-1">
-                  (<%= pluralize(dish.pending_portions, 'portion') %> en attente)
-                </span>
-              <% end %>
-            </div>
-          </div>
-
-          <!-- Informations du créateur -->
-          <div class="mb-4">
-            <p class="text-gray-500 text-sm"><%= dish.user.full_name %></p>
-          </div>
-
-          <!-- Prix et disponibilité -->
-          <div class="flex justify-between items-center">
-            <div>
-              <span class="text-2xl font-bold text-gray-900"><%= number_to_currency(dish.price, unit: "€") %></span>
-              <span class="text-gray-500 text-sm">par portion</span>
-            </div>
-
-            <div class="flex gap-2">
-              <%= link_to "Voir les détails", dish_path(dish), class: "text-blue-500 hover:text-blue-600" %>
-              <%= link_to "Réserver", dish_path(dish), class: "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" %>
-            </div>
-          </div>
-        </div>
-      </div>
-    <% end %>
+  <!-- Message "Aucun résultat" (caché par défaut) -->
+  <div id="noResults" class="hidden text-center py-8">
+    <p class="text-gray-500">Aucun plat ne correspond à votre recherche.</p>
   </div>
 
-  <!-- Message si aucun plat -->
-  <% if @dishes.empty? %>
-    <div class="bg-gray-50 rounded-lg p-8 text-center">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun plat disponible</h3>
-      <p class="mt-1 text-sm text-gray-500">Soyez le premier à proposer un plat à vos voisins !</p>
-      <div class="mt-6">
-        <%= link_to new_dish_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-          </svg>
-          Proposer un plat
+  <!-- Grille des plats -->
+  <div id="dishes-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <%= render partial: 'dishes_list', locals: { dishes: @dishes } %>
+  </div>
+
+  <!-- Pagination -->
+  <% if @total_pages > 1 %>
+    <div class="mt-8 flex justify-center" id="pagination">
+      <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+        <% (1..@total_pages).each do |page| %>
+          <button onclick="loadPage(<%= page %>)"
+                  class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium <%= page == @page ? 'text-blue-500 border-blue-500' : 'text-gray-700 hover:bg-gray-50' %>"
+                  <%= 'disabled' if page == @page %>>
+            <%= page %>
+          </button>
         <% end %>
-      </div>
+      </nav>
     </div>
   <% end %>
-</div> 
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const dishesGrid = document.getElementById('dishes-grid');
+    const noResults = document.getElementById('noResults');
+    const dishes = dishesGrid.getElementsByClassName('dish-card');
+
+    function normalizeString(str) {
+      return str.toLowerCase()
+               .normalize("NFD")
+               .replace(/[\u0300-\u036f]/g, "")
+               .trim();
+    }
+
+    function filterDishes(searchTerm) {
+      searchTerm = normalizeString(searchTerm);
+      let hasResults = false;
+
+      Array.from(dishes).forEach(dish => {
+        const name = normalizeString(dish.dataset.name);
+        const ingredients = normalizeString(dish.dataset.ingredients || '');
+        const description = normalizeString(dish.dataset.description);
+
+        if (name.includes(searchTerm) || 
+            ingredients.includes(searchTerm) || 
+            description.includes(searchTerm)) {
+          dish.classList.remove('hidden');
+          hasResults = true;
+        } else {
+          dish.classList.add('hidden');
+        }
+      });
+
+      // Afficher/masquer le message "Aucun résultat"
+      noResults.classList.toggle('hidden', hasResults);
+    }
+
+    // Écouteur d'événement pour la recherche en temps réel
+    let debounceTimeout;
+    searchInput.addEventListener('input', function(e) {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        filterDishes(e.target.value);
+      }, 300); // Délai de 300ms pour éviter trop d'appels
+    });
+
+    // Réinitialiser la recherche quand on change de page
+    window.addEventListener('popstate', function() {
+      searchInput.value = '';
+      filterDishes('');
+    });
+  });
+
+  // Fonction de pagination existante
+  function loadPage(page) {
+    const url = new URL(window.location);
+    url.searchParams.set('page', page);
+    window.history.pushState({}, '', url);
+
+    const grid = document.getElementById('dishes-grid');
+    grid.style.opacity = '0.5';
+
+    fetch(`${url.pathname}?page=${page}`, {
+      headers: {
+        'Accept': 'text/html',
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    .then(response => response.text())
+    .then(html => {
+      grid.innerHTML = html;
+      grid.style.opacity = '1';
+
+      // Réinitialiser la recherche
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.value = '';
+        const event = new Event('input');
+        searchInput.dispatchEvent(event);
+      }
+
+      // Mettre à jour les boutons de pagination
+      document.querySelectorAll('#pagination button').forEach(button => {
+        const buttonPage = parseInt(button.textContent.trim());
+        if (buttonPage === page) {
+          button.classList.add('text-blue-500', 'border-blue-500');
+          button.classList.remove('text-gray-700', 'hover:bg-gray-50');
+          button.disabled = true;
+        } else {
+          button.classList.remove('text-blue-500', 'border-blue-500');
+          button.classList.add('text-gray-700', 'hover:bg-gray-50');
+          button.disabled = false;
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
+</script> 

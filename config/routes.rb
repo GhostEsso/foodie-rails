@@ -1,9 +1,25 @@
 Rails.application.routes.draw do
-  root "dishes#index"
+  root "dishes#home"
+  
+  # Routes pour l'administration
+  namespace :admin do
+    root 'dashboard#index'
+    get 'login', to: 'sessions#new'
+    post 'login', to: 'sessions#create'
+    delete 'logout', to: 'sessions#destroy'
+    
+    resources :users
+    resources :dishes, only: [:index, :show, :destroy]
+    resources :bookings, only: [:index, :show, :destroy]
+  end
   
   # Routes pour les plats
-  resources :dishes, only: [:index, :new, :create, :show] do
+  resources :dishes, only: [:index, :new, :create, :show, :edit, :update] do
+    collection do
+      get :my_dishes
+    end
     resources :bookings, only: [:create]
+    resources :conversations, only: [:create]
   end
   
   # Routes pour les réservations
@@ -14,8 +30,17 @@ Rails.application.routes.draw do
     end
   end
   
+  # Routes pour les conversations et messages
+  resources :conversations, only: [:index, :show] do
+    resources :messages, only: [:create]
+  end
+  
   # Routes pour les notifications
   post '/notifications/mark_as_read', to: 'notifications#mark_as_read'
+  
+  # Routes pour les paramètres
+  get '/settings', to: 'settings#edit', as: :edit_settings
+  patch '/settings', to: 'settings#update', as: :settings
   
   # Routes pour l'authentification
   get '/login', to: 'sessions#new'

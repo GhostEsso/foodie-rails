@@ -1,0 +1,10 @@
+<%= turbo_frame_tag dom_id(message) do %>
+  <div class="mb-4 <%= message.user == current_user ? 'text-right' : 'text-left' %>">
+    <div class="inline-block max-w-[70%] <%= message.user == current_user ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-900' %> rounded-lg px-4 py-2 shadow-sm">
+      <p class="text-sm"><%= message.content %></p>
+      <p class="text-xs <%= message.user == current_user ? 'text-blue-100' : 'text-gray-500' %> mt-1">
+        <%= time_ago_in_words(message.created_at) %>
+      </p>
+    </div>
+  </div>
+<% end %> 

@@ -1,10 +1,5 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-    <!-- Image du plat -->
-    <div class="bg-gray-100 rounded-lg flex items-center justify-center h-96">
-      <span class="text-gray-400">Pas d'image</span>
-    </div>
-
     <!-- Informations du plat -->
     <div class="space-y-8">
       <!-- En-tête -->
@@ -33,28 +28,10 @@
         </p>
       </div>
 
-      <!-- Disponibilité -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-900">Disponibilité</h2>
-        <div class="mt-1 text-gray-600">
-          <p>Disponible à partir du : <%= l(Time.current, format: :long) %></p>
-          <p>Jusqu'au : <%= l(Time.current + 1.day, format: :long) %></p>
-        </div>
-      </div>
-
       <!-- Description -->
       <div>
         <h2 class="text-lg font-semibold text-gray-900">Description</h2>
         <p class="mt-1 text-gray-600"><%= @dish.description %></p>
-      </div>
-
-      <!-- Ingrédients -->
-      <div>
-        <h2 class="text-lg font-semibold text-gray-900">Ingrédients</h2>
-        <ul class="mt-2 space-y-1 text-gray-600">
-          <li>• Farine de Maïs</li>
-          <li>• Oignons</li>
-        </ul>
       </div>
 
       <% unless @is_owner %>
@@ -94,9 +71,11 @@
               <%= f.submit "Confirmer la réservation", 
                           class: "w-full bg-blue-500 text-white py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors cursor-pointer" %>
             <% end %>
-            <button class="w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50">
+            <%= button_to dish_conversations_path(@dish),
+                method: :post,
+                class: "w-12 h-12 border border-gray-300 rounded-lg flex items-center justify-center hover:bg-gray-50" do %>
               <%= image_tag "message.png", class: "w-6 h-6" %>
-            </button>
+            <% end %>
           </div>
         </div>
 

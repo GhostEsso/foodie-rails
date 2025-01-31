@@ -8,6 +8,10 @@ class Booking < ApplicationRecord
             inclusion: { in: %w[pending approved rejected] }
   validate :enough_portions_available
 
+  def total_price
+    portions * dish.price
+  end
+
   private
 
   def enough_portions_available
