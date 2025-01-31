@@ -1,0 +1,109 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Plats disponibles</h1>
+    <p class="mt-2 text-gray-600">Découvrez les délicieux plats proposés par vos voisins</p>
+  </div>
+
+  <!-- Barre de recherche et filtres -->
+  <div class="mb-8">
+    <div class="flex flex-col md:flex-row gap-4">
+      <!-- Barre de recherche -->
+      <div class="flex-grow">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+          <input type="text" placeholder="Rechercher un plat..." class="pl-10 w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+        </div>
+      </div>
+
+      <!-- Filtres -->
+      <div class="flex gap-4">
+        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option>Tous les plats</option>
+          <option>Mes plats</option>
+          <option>Plats réservés</option>
+        </select>
+
+        <select class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+          <option>Plus récents</option>
+          <option>Prix croissant</option>
+          <option>Prix décroissant</option>
+        </select>
+
+        <div class="flex gap-2">
+          <button class="px-4 py-2 text-gray-700 hover:text-gray-900">Réinitialiser</button>
+          <button class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Appliquer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Liste des plats -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <% @dishes.each do |dish| %>
+      <div class="bg-white rounded-lg shadow overflow-hidden">
+        <!-- Image placeholder -->
+        <div class="h-48 bg-gray-100 flex items-center justify-center">
+          <span class="text-gray-400">Pas d'image</span>
+        </div>
+
+        <div class="p-6">
+          <!-- En-tête avec portions -->
+          <div class="flex justify-between items-start mb-4">
+            <h2 class="text-xl font-semibold text-gray-900"><%= dish.name %></h2>
+            <div class="flex flex-col items-end">
+              <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded-full text-sm">
+                <%= pluralize(dish.available_portions, 'portion') %> disponible<%= dish.available_portions > 1 ? 's' : '' %>
+              </span>
+              <% if dish.pending_portions > 0 %>
+                <span class="text-yellow-600 text-xs mt-1">
+                  (<%= pluralize(dish.pending_portions, 'portion') %> en attente)
+                </span>
+              <% end %>
+            </div>
+          </div>
+
+          <!-- Informations du créateur -->
+          <div class="mb-4">
+            <p class="text-gray-500 text-sm"><%= dish.user.full_name %></p>
+          </div>
+
+          <!-- Prix et disponibilité -->
+          <div class="flex justify-between items-center">
+            <div>
+              <span class="text-2xl font-bold text-gray-900"><%= number_to_currency(dish.price, unit: "€") %></span>
+              <span class="text-gray-500 text-sm">par portion</span>
+            </div>
+
+            <div class="flex gap-2">
+              <%= link_to "Voir les détails", dish_path(dish), class: "text-blue-500 hover:text-blue-600" %>
+              <%= link_to "Réserver", dish_path(dish), class: "px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600" %>
+            </div>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Message si aucun plat -->
+  <% if @dishes.empty? %>
+    <div class="bg-gray-50 rounded-lg p-8 text-center">
+      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+      </svg>
+      <h3 class="mt-2 text-sm font-medium text-gray-900">Aucun plat disponible</h3>
+      <p class="mt-1 text-sm text-gray-500">Soyez le premier à proposer un plat à vos voisins !</p>
+      <div class="mt-6">
+        <%= link_to new_dish_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500" do %>
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+          </svg>
+          Proposer un plat
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div> 

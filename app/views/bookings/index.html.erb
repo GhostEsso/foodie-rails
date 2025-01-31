@@ -1,0 +1,173 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">
+      <% case @filter %>
+      <% when 'pending' %>
+        Réservations en attente
+      <% when 'received' %>
+        Réservations reçues
+      <% when 'my_bookings' %>
+        Mes réservations
+      <% end %>
+    </h1>
+    <div class="flex space-x-4">
+      <% if @filter == 'my_bookings' %>
+        <div class="flex space-x-2">
+          <button class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none" data-filter="all">
+            Toutes
+          </button>
+          <button class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none" data-filter="pending">
+            En attente
+          </button>
+          <button class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none" data-filter="approved">
+            Approuvées
+          </button>
+          <button class="px-4 py-2 rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none" data-filter="rejected">
+            Rejetées
+          </button>
+        </div>
+      <% else %>
+        <%= link_to "En attente", bookings_path(filter: 'pending'), 
+            class: "px-4 py-2 rounded-md #{@filter == 'pending' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}" %>
+        <%= link_to "Reçues", bookings_path(filter: 'received'), 
+            class: "px-4 py-2 rounded-md #{@filter == 'received' ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700'}" %>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="space-y-6" id="bookingsList">
+    <% @bookings.each do |booking| %>
+      <div class="bg-white rounded-lg shadow p-6" data-status="<%= booking.status %>">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold text-gray-900"><%= booking.dish.name %></h2>
+              <% case booking.status %>
+              <% when 'pending' %>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800">
+                  En attente
+                </span>
+              <% when 'approved' %>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  Approuvé
+                </span>
+              <% when 'rejected' %>
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                  Rejeté
+                </span>
+              <% end %>
+            </div>
+            
+            <div class="mt-2">
+              <p class="text-gray-600">
+                <% if @filter == 'my_bookings' %>
+                  Proposé par <%= booking.dish.user.full_name %> • 
+                <% else %>
+                  Réservé par <%= booking.user.full_name %> • 
+                <% end %>
+                <%= booking.dish.user.apartment.building.name %>
+              </p>
+              <div class="mt-2 flex items-center gap-4">
+                <p class="text-gray-600">
+                  <%= pluralize(booking.portions, "portion") %> • 
+                  <%= number_to_currency(booking.portions * booking.dish.price, unit: "€") %>
+                </p>
+                <p class="text-gray-500">
+                  Réservé le <%= l(booking.created_at, format: :long) %>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <% if booking.status == 'pending' && @filter == 'pending' %>
+            <div class="ml-4 flex items-center space-x-2">
+              <%= button_to approve_booking_path(booking), 
+                  method: :patch,
+                  class: "px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors" do %>
+                Approuver
+              <% end %>
+              
+              <%= button_to reject_booking_path(booking),
+                  method: :patch,
+                  class: "px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors" do %>
+                Rejeter
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+
+    <% if @bookings.empty? %>
+      <div class="bg-gray-50 rounded-lg p-8 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">
+          <% case @filter %>
+          <% when 'pending' %>
+            Aucune réservation en attente
+          <% when 'received' %>
+            Aucune réservation reçue
+          <% when 'my_bookings' %>
+            Vous n'avez pas encore fait de réservation
+          <% end %>
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+          <% case @filter %>
+          <% when 'pending' %>
+            Vous n'avez pas de réservations en attente pour le moment.
+          <% when 'received' %>
+            Vous n'avez pas encore de réservations approuvées.
+          <% when 'my_bookings' %>
+            Découvrez les plats proposés par vos voisins et faites votre première réservation !
+          <% end %>
+        </p>
+        <% if @filter == 'my_bookings' && @bookings.empty? %>
+          <div class="mt-6">
+            <%= link_to dishes_path, class: "inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-500 hover:bg-blue-600" do %>
+              Voir les plats disponibles
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  const bookingItems = document.querySelectorAll('#bookingsList > div[data-status]');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      const filter = this.dataset.filter;
+      
+      // Update active button style
+      filterButtons.forEach(btn => {
+        btn.classList.remove('bg-blue-500', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+      });
+      this.classList.remove('bg-gray-100', 'text-gray-700');
+      this.classList.add('bg-blue-500', 'text-white');
+
+      // Filter bookings
+      bookingItems.forEach(item => {
+        if (filter === 'all' || item.dataset.status === filter) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // Set initial active state
+  const allButton = document.querySelector('[data-filter="all"]');
+  if (allButton) {
+    allButton.classList.remove('bg-gray-100', 'text-gray-700');
+    allButton.classList.add('bg-blue-500', 'text-white');
+  }
+});
+</script> 

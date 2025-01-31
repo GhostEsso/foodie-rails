@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Foody Rails" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  </head>
+
+  <body>
+    <nav class="bg-white shadow-lg">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+          <!-- Logo et navigation principale groupés -->
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <%= link_to root_path, class: "text-blue-500 text-2xl font-bold" do %>
+                foody
+              <% end %>
+            </div>
+            <% if user_signed_in? %>
+              <div class="ml-4 flex space-x-4">
+                <%= link_to "Plats disponibles", dishes_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Proposer un plat", new_dish_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Mes réservations", bookings_path(filter: 'my_bookings'), class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+              </div>
+            <% end %>
+          </div>
+
+          <!-- Boutons de droite -->
+          <div class="hidden md:block">
+            <div class="flex items-center">
+              <% if user_signed_in? %>
+                <!-- User Dropdown -->
+                <div class="relative" id="userDropdown">
+                  <button class="flex items-center space-x-3 focus:outline-none" id="userDropdownButton">
+                    <div class="flex items-center">
+                      <div class="relative" id="notificationDropdown">
+                        <button class="focus:outline-none" id="notificationButton">
+                          <%= image_tag "notif.png", class: "w-5 h-5" %>
+                          <% if current_user.unread_notifications_count > 0 %>
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                              <%= current_user.unread_notifications_count %>
+                            </span>
+                          <% end %>
+                        </button>
+
+                        <!-- Notifications Dropdown -->
+                        <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 hidden" id="notificationsMenu">
+                          <div class="px-4 py-2 border-b border-gray-100">
+                            <h3 class="text-sm font-semibold text-gray-900">Notifications récentes</h3>
+                          </div>
+                          <div class="max-h-96 overflow-y-auto">
+                            <% current_user.notifications.order(created_at: :desc).limit(4).each do |notification| %>
+                              <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 <%= 'bg-blue-50' unless notification.read_at %>">
+                                <p class="text-sm text-gray-800"><%= notification.message %></p>
+                                <p class="text-xs text-gray-500 mt-1">
+                                  <%= time_ago_in_words(notification.created_at) %>
+                                </p>
+                              </div>
+                            <% end %>
+
+                            <% if current_user.notifications.empty? %>
+                              <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                                Aucune notification
+                              </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                      <span class="text-gray-700 ml-2"><%= current_user.full_name %></span>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <%= image_tag "user.png", class: "w-6 h-6" %>
+                    </div>
+                  </button>
+
+                  <!-- Dropdown Menu -->
+                  <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden" id="dropdownMenu">
+                    <%= link_to "#", class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <%= image_tag "settings.png", class: "w-5 h-5 mr-3" %>
+                      Paramètres
+                    <% end %>
+
+                    <%= link_to bookings_path(filter: 'received'), class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <%= image_tag "booking.png", class: "w-5 h-5 mr-3" %>
+                      Réservations reçues
+                    <% end %>
+
+                    <%= link_to bookings_path(filter: 'pending'), class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <%= image_tag "waiting.png", class: "w-5 h-5 mr-3" %>
+                      Réservations en attente
+                    <% end %>
+
+                    <%= link_to "#", class: "flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <%= image_tag "message.png", class: "w-5 h-5 mr-3" %>
+                      Messages
+                    <% end %>
+
+                    <%= button_to logout_path, method: :delete, class: "flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" do %>
+                      <%= image_tag "logout.png", class: "w-5 h-5 mr-3" %>
+                      Déconnexion
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <%= link_to "Connexion", login_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+                <%= link_to "Inscription", signup_path, class: "bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium" %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Flash Messages -->
+    <% if flash.any? %>
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4">
+        <% flash.each do |type, message| %>
+          <div class="<%= type == 'notice' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' %> p-4 rounded-lg mb-4">
+            <%= message %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <main>
+      <%= yield %>
+    </main>
+
+    <footer class="bg-white border-t border-gray-200 mt-20">
+      <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <!-- Logo et description -->
+          <div class="col-span-1">
+            <%= link_to root_path, class: "text-blue-500 text-2xl font-bold" do %>
+              foody
+            <% end %>
+            <p class="mt-4 text-gray-600 text-sm">
+              Partagez vos plats faits maison avec vos voisins et découvrez de délicieuses créations culinaires.
+            </p>
+          </div>
+
+          <!-- Colonne vide pour l'espacement -->
+          <div class="hidden md:block"></div>
+
+          <!-- Liens rapides -->
+          <div>
+            <h3 class="text-gray-900 font-semibold mb-4">Liens rapides</h3>
+            <ul class="space-y-3">
+              <li><%= link_to "Plats disponibles", dishes_path, class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+              <li><%= link_to "Proposer un plat", new_dish_path, class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+              <li><%= link_to "Mes réservations", "#", class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+            </ul>
+          </div>
+
+          <!-- Contact -->
+          <div>
+            <h3 class="text-gray-900 font-semibold mb-4">Contact</h3>
+            <ul class="space-y-3">
+              <li><%= link_to "Nous contacter", "#", class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+              <li><%= link_to "FAQ", "#", class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+              <li><%= link_to "Conditions d'utilisation", "#", class: "text-gray-600 hover:text-gray-900 text-sm" %></li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="mt-12 pt-8 border-t border-gray-200">
+          <p class="text-center text-gray-400 text-sm">
+            © <%= Time.current.year %> Foody. Tous droits réservés.
+          </p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // User dropdown
+        const dropdownButton = document.getElementById('userDropdownButton');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        const userDropdown = document.getElementById('userDropdown');
+
+        // Notifications dropdown
+        const notificationButton = document.getElementById('notificationButton');
+        const notificationsMenu = document.getElementById('notificationsMenu');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+
+        // Toggle user dropdown
+        dropdownButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+          // Fermer le menu des notifications si ouvert
+          notificationsMenu.classList.add('hidden');
+        });
+
+        // Toggle notifications dropdown
+        notificationButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          notificationsMenu.classList.toggle('hidden');
+          // Fermer le menu utilisateur si ouvert
+          dropdownMenu.classList.add('hidden');
+          
+          // Marquer les notifications comme lues
+          if (!notificationsMenu.classList.contains('hidden')) {
+            fetch('/notifications/mark_as_read', { 
+              method: 'POST',
+              headers: {
+                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+              }
+            }).then(response => {
+              if (response.ok) {
+                // Supprimer le badge de notification
+                const badge = notificationButton.querySelector('span');
+                if (badge) badge.remove();
+              }
+            });
+          }
+        });
+
+        // Close dropdowns when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!userDropdown.contains(e.target)) {
+            dropdownMenu.classList.add('hidden');
+          }
+          if (!notificationDropdown.contains(e.target)) {
+            notificationsMenu.classList.add('hidden');
+          }
+        });
+
+        // Prevent dropdowns from closing when clicking inside
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+
+        notificationsMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      });
+    </script>
+  </body>
+</html>
