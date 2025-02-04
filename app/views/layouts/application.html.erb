@@ -34,7 +34,8 @@
               <% end %>
             </div>
             <% if user_signed_in? %>
-              <div class="ml-4 flex space-x-4">
+              <!-- Navigation desktop -->
+              <div class="hidden md:flex ml-4 space-x-4">
                 <%= link_to "Plats disponibles", dishes_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Mes plats", my_dishes_dishes_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
                 <%= link_to "Proposer un plat", new_dish_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
@@ -44,63 +45,68 @@
           </div>
 
           <!-- Boutons de droite -->
-          <div class="hidden md:block">
-            <div class="flex items-center">
-              <% if user_signed_in? %>
-                <!-- User Dropdown -->
-                <div class="relative" id="userDropdown">
-                  <div class="flex items-center space-x-3">
-                    <!-- Notification Icon -->
-                    <div class="relative" id="notificationDropdown">
-                      <button class="focus:outline-none relative" id="notificationButton">
-                        <%= image_tag "notif.png", class: "w-5 h-5" %>
-                        <% if current_user.unread_notifications_count > 0 %>
-                          <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
-                        <% end %>
-                      </button>
+          <div class="flex items-center">
+            <% if user_signed_in? %>
+              <!-- Bouton menu mobile -->
+              <div class="md:hidden">
+                <button type="button" class="text-gray-700 hover:text-gray-900 focus:outline-none" id="mobileMenuButton">
+                  <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                  </svg>
+                </button>
+              </div>
 
-                      <!-- Notifications Dropdown -->
-                      <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 hidden" id="notificationsMenu">
-                        <div class="px-4 py-2 border-b border-gray-100">
-                          <h3 class="text-sm font-semibold text-gray-900">Notifications récentes</h3>
-                        </div>
-                        <div class="max-h-96 overflow-y-auto">
-                          <% current_user.notifications.order(created_at: :desc).limit(4).each do |notification| %>
-                            <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 <%= 'bg-blue-50' unless notification.read_at %>">
-                              <p class="text-sm text-gray-800"><%= notification.message %></p>
-                              <p class="text-xs text-gray-500 mt-1">
-                                <%= time_ago_in_words(notification.created_at) %>
-                              </p>
-                            </div>
-                          <% end %>
-
-                          <% if current_user.notifications.empty? %>
-                            <div class="px-4 py-3 text-sm text-gray-500 text-center">
-                              Aucune notification
-                            </div>
-                          <% end %>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Messages Icon -->
-                    <%= link_to conversations_path, class: "relative" do %>
-                      <%= image_tag "message.png", class: "w-5 h-5" %>
-                      <% if current_user.unread_messages_count > 0 %>
-                        <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
-                      <% end %>
+              <!-- User Dropdown (Desktop) -->
+              <div class="hidden md:flex items-center">
+                <!-- Notification Icon -->
+                <div class="relative" id="notificationDropdown">
+                  <button class="focus:outline-none relative" id="notificationButton">
+                    <%= image_tag "notif.png", class: "w-5 h-5" %>
+                    <% if current_user.unread_notifications_count > 0 %>
+                      <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
                     <% end %>
+                  </button>
 
-                    <!-- User Name -->
-                    <span class="text-gray-700"><%= current_user.full_name %></span>
+                  <!-- Notifications Dropdown -->
+                  <div class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 hidden" id="notificationsMenu">
+                    <div class="px-4 py-2 border-b border-gray-100">
+                      <h3 class="text-sm font-semibold text-gray-900">Notifications récentes</h3>
+                    </div>
+                    <div class="max-h-96 overflow-y-auto">
+                      <% current_user.notifications.order(created_at: :desc).limit(4).each do |notification| %>
+                        <div class="px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-0 <%= 'bg-blue-50' unless notification.read_at %>">
+                          <p class="text-sm text-gray-800"><%= notification.message %></p>
+                          <p class="text-xs text-gray-500 mt-1">
+                            <%= time_ago_in_words(notification.created_at) %>
+                          </p>
+                        </div>
+                      <% end %>
 
-                    <!-- User Icon -->
-                    <button class="flex items-center focus:outline-none" id="userDropdownButton">
-                      <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-                        <%= image_tag "user.png", class: "w-6 h-6" %>
-                      </div>
-                    </button>
+                      <% if current_user.notifications.empty? %>
+                        <div class="px-4 py-3 text-sm text-gray-500 text-center">
+                          Aucune notification
+                        </div>
+                      <% end %>
+                    </div>
                   </div>
+                </div>
+
+                <!-- Messages Icon -->
+                <%= link_to conversations_path, class: "relative ml-4" do %>
+                  <%= image_tag "message.png", class: "w-5 h-5" %>
+                  <% if current_user.unread_messages_count > 0 %>
+                    <span class="absolute -top-0.5 -right-0.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                  <% end %>
+                <% end %>
+
+                <!-- User menu -->
+                <div class="relative ml-4" id="userDropdown">
+                  <button class="flex items-center focus:outline-none" id="userDropdownButton">
+                    <span class="text-gray-700 mr-2"><%= current_user.full_name %></span>
+                    <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                      <%= image_tag "user.png", class: "w-6 h-6" %>
+                    </div>
+                  </button>
 
                   <!-- User Dropdown Menu -->
                   <div class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 hidden" id="dropdownMenu">
@@ -127,11 +133,62 @@
                     <% end %>
                   </div>
                 </div>
-              <% else %>
-                <%= link_to "Connexion", login_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
-                <%= link_to "Inscription", signup_path, class: "bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium" %>
+              </div>
+            <% else %>
+              <%= link_to "Connexion", login_path, class: "text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium" %>
+              <%= link_to "Inscription", signup_path, class: "bg-blue-500 text-white hover:bg-blue-600 px-4 py-2 rounded-md text-sm font-medium" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- Menu mobile -->
+      <div class="md:hidden hidden" id="mobileMenu">
+        <div class="px-4 pt-4 pb-3 space-y-6 bg-white border-t border-gray-200">
+          <!-- Navigation principale -->
+          <div class="space-y-1">
+            <%= link_to "Plats disponibles", dishes_path, class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" %>
+            <%= link_to "Mes plats", my_dishes_dishes_path, class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" %>
+            <%= link_to "Proposer un plat", new_dish_path, class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" %>
+            <%= link_to "Mes réservations", bookings_path(filter: 'my_bookings'), class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" %>
+          </div>
+          
+          <!-- Section notifications et messages -->
+          <div class="space-y-1">
+            <button class="w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 relative" id="mobileNotificationButton">
+              <%= image_tag "notif.png", class: "w-5 h-5" %>
+              <% if current_user.unread_notifications_count > 0 %>
+                <span class="absolute top-1 left-7 w-2 h-2 bg-red-500 rounded-full"></span>
               <% end %>
-            </div>
+              <span class="ml-2">Notifications</span>
+            </button>
+
+            <%= link_to conversations_path, class: "w-full flex items-center px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 relative" do %>
+              <%= image_tag "message.png", class: "w-5 h-5" %>
+              <% if current_user.unread_messages_count > 0 %>
+                <span class="absolute top-1 left-7 w-2 h-2 bg-red-500 rounded-full"></span>
+              <% end %>
+              <span class="ml-2">Messages</span>
+            <% end %>
+          </div>
+          
+          <!-- Liens du profil -->
+          <div class="space-y-1">
+            <%= link_to edit_settings_path, class: "block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" do %>
+              <div class="flex items-center">
+                <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Paramètres du profil
+              </div>
+            <% end %>
+            
+            <%= button_to logout_path, method: :delete, class: "w-full text-left block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50" do %>
+              <div class="flex items-center">
+                <%= image_tag "logout.png", class: "w-5 h-5 mr-3" %>
+                Déconnexion
+              </div>
+            <% end %>
           </div>
         </div>
       </div>
@@ -200,6 +257,14 @@
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        mobileMenuButton.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+        });
+
         // User dropdown
         const dropdownButton = document.getElementById('userDropdownButton');
         const dropdownMenu = document.getElementById('dropdownMenu');
@@ -211,56 +276,77 @@
         const notificationDropdown = document.getElementById('notificationDropdown');
 
         // Toggle user dropdown
-        dropdownButton.addEventListener('click', function(e) {
-          e.stopPropagation();
-          dropdownMenu.classList.toggle('hidden');
-          // Fermer le menu des notifications si ouvert
-          notificationsMenu.classList.add('hidden');
-        });
+        if (dropdownButton) {
+          dropdownButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            dropdownMenu.classList.toggle('hidden');
+            // Fermer le menu des notifications si ouvert
+            if (notificationsMenu) {
+              notificationsMenu.classList.add('hidden');
+            }
+          });
+        }
 
         // Toggle notifications dropdown
-        notificationButton.addEventListener('click', function(e) {
-          e.stopPropagation();
-          notificationsMenu.classList.toggle('hidden');
-          // Fermer le menu utilisateur si ouvert
-          dropdownMenu.classList.add('hidden');
-          
-          // Marquer les notifications comme lues
-          if (!notificationsMenu.classList.contains('hidden')) {
-            fetch('/notifications/mark_as_read', { 
-              method: 'POST',
-              headers: {
-                'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
-              }
-            }).then(response => {
-              if (response.ok) {
-                // Supprimer le badge de notification
-                const badge = notificationButton.querySelector('span');
-                if (badge) badge.remove();
-              }
-            });
-          }
-        });
+        if (notificationButton) {
+          notificationButton.addEventListener('click', function(e) {
+            e.stopPropagation();
+            notificationsMenu.classList.toggle('hidden');
+            // Fermer le menu utilisateur si ouvert
+            if (dropdownMenu) {
+              dropdownMenu.classList.add('hidden');
+            }
+            
+            // Marquer les notifications comme lues
+            if (!notificationsMenu.classList.contains('hidden')) {
+              fetch('/notifications/mark_as_read', { 
+                method: 'POST',
+                headers: {
+                  'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+                  'Content-Type': 'application/json'
+                }
+              }).then(response => {
+                if (response.ok) {
+                  // Supprimer le badge de notification
+                  const badge = notificationButton.querySelector('span');
+                  if (badge) badge.remove();
+                }
+              });
+            }
+          });
+        }
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
-          if (!userDropdown.contains(e.target)) {
-            dropdownMenu.classList.add('hidden');
+          // Fermer le menu mobile si on clique en dehors
+          if (!mobileMenuButton.contains(e.target) && !mobileMenu.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
           }
-          if (!notificationDropdown.contains(e.target)) {
-            notificationsMenu.classList.add('hidden');
+
+          if (userDropdown && !userDropdown.contains(e.target)) {
+            if (dropdownMenu) {
+              dropdownMenu.classList.add('hidden');
+            }
+          }
+          if (notificationDropdown && !notificationDropdown.contains(e.target)) {
+            if (notificationsMenu) {
+              notificationsMenu.classList.add('hidden');
+            }
           }
         });
 
         // Prevent dropdowns from closing when clicking inside
-        dropdownMenu.addEventListener('click', function(e) {
-          e.stopPropagation();
-        });
+        if (dropdownMenu) {
+          dropdownMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+          });
+        }
 
-        notificationsMenu.addEventListener('click', function(e) {
-          e.stopPropagation();
-        });
+        if (notificationsMenu) {
+          notificationsMenu.addEventListener('click', function(e) {
+            e.stopPropagation();
+          });
+        }
       });
     </script>
   </body>
