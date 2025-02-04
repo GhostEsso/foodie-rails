@@ -1,18 +1,18 @@
 databases:
-  - name: "ahoefa_site"
-    databaseName: "ahoefa_site"
-    user: "ahoefa_site"
+  - name: "foodie"
+    databaseName: "foodie_07t4"
+    user: "foodie"
 
 services:
   - type: "web"
-    name: ahoefa
+    name: foodie-rails
     env: ruby
     buildCommand: "./bin/render-build.sh"
     startCommand: "bundle exec puma -C config/puma.rb"
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: "ahoefa_site"
+          name: "foodie_07t4"
           property: connectionString
       - key: RAILS_MASTER_KEY
         sync: false
