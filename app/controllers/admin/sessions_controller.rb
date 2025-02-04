@@ -2,11 +2,13 @@ module Admin
   class SessionsController < ApplicationController
     layout "admin"
 
-    # Ces credentials seront les mêmes en développement et en production
-    ADMIN_CREDENTIALS = {
-      email: "admin@foody.fr",
-      password: "admin123!"
-    }.freeze
+    # Utilisation des variables d'environnement pour les credentials
+    def admin_credentials
+      {
+        email: ENV.fetch('ADMIN_EMAIL', 'admin@foody.fr'),
+        password: ENV.fetch('ADMIN_PASSWORD', 'admin123!')
+      }
+    end
 
     helper_method :admin_signed_in?
 
@@ -36,8 +38,8 @@ module Admin
     end
 
     def valid_admin_credentials?
-      params[:email] == ADMIN_CREDENTIALS[:email] &&
-      params[:password] == ADMIN_CREDENTIALS[:password]
+      params[:email] == admin_credentials[:email] &&
+      params[:password] == admin_credentials[:password]
     end
   end
 end
