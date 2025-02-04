@@ -1,11 +1,18 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- En-tête -->
-  <div class="flex justify-between items-center mb-8">
-    <div>
-      <h1 class="text-2xl font-bold text-gray-900">Plats disponibles</h1>
-      <p class="mt-1 text-sm text-gray-600">Découvrez les délicieux plats proposés par vos voisins.</p>
+  <div class="mb-8">
+    <div class="md:flex md:items-start md:justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900">Plats disponibles</h1>
+        <p class="mt-2 text-gray-600">Découvrez les délicieux plats proposés par vos voisins.</p>
+      </div>
+      <%= link_to new_dish_path, class: "mt-4 md:mt-0 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600 transition-colors duration-200" do %>
+        <svg class="h-5 w-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+        </svg>
+        Proposer un plat
+      <% end %>
     </div>
-    <%= link_to "Proposer un plat", new_dish_path, class: "inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-500 hover:bg-blue-600" %>
   </div>
 
   <!-- Barre de recherche -->
