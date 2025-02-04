@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  conversation: one
-  user: one
-  content: MyText
+johns_message:
+  conversation: johns_conversation
+  user: john
+  content: "Bonjour, je suis intéressé par votre tarte aux pommes"
 
-two:
-  conversation: two
-  user: two
-  content: MyText
+janes_message:
+  conversation: janes_conversation
+  user: jane
+  content: "Bonjour, vos lasagnes ont l'air délicieuses"

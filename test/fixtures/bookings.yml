@@ -1,13 +1,13 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  user: one
-  dish: one
-  portions: 1
-  status: MyString
+johns_booking:
+  user: john
+  dish: janes_dish
+  portions: 2
+  status: pending
 
-two:
-  user: two
-  dish: two
+janes_booking:
+  user: jane
+  dish: johns_dish
   portions: 1
-  status: MyString
+  status: approved

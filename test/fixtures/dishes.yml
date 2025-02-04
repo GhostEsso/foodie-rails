@@ -1,15 +1,15 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  name: MyString
-  description: MyText
-  portions: 1
-  price: 9.99
-  user: one
+johns_dish:
+  name: Lasagnes maison
+  description: Délicieuses lasagnes à la bolognaise
+  portions: 4
+  price: 12.99
+  user: john
 
-two:
-  name: MyString
-  description: MyText
-  portions: 1
-  price: 9.99
-  user: two
+janes_dish:
+  name: Tarte aux pommes
+  description: Tarte aux pommes traditionnelle
+  portions: 6
+  price: 8.99
+  user: jane

@@ -1,11 +1,11 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  number: MyString
-  building: one
-  user: one
+john_apartment:
+  number: "101"
+  building: building_one
+  user: john
 
-two:
-  number: MyString
-  building: two
-  user: two
+jane_apartment:
+  number: "102"
+  building: building_two
+  user: jane
