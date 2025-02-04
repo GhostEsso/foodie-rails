@@ -14,4 +14,4 @@ module Admin
       redirect_to admin_bookings_path, notice: "La réservation a été supprimée avec succès."
     end
   end
-end 
+end

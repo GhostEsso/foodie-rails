@@ -1,23 +1,23 @@
 class BookingsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_booking, only: [:approve, :reject]
-  before_action :ensure_owner, only: [:approve, :reject]
+  before_action :set_booking, only: [ :approve, :reject ]
+  before_action :ensure_owner, only: [ :approve, :reject ]
 
   def index
-    @filter = params[:filter] || 'my_bookings'
-    
+    @filter = params[:filter] || "my_bookings"
+
     case @filter
-    when 'pending'
+    when "pending"
       # Réservations en attente pour les plats de l'utilisateur
       @bookings = current_user.received_bookings.includes(dish: :user)
-                            .where(status: 'pending')
+                            .where(status: "pending")
                             .order(created_at: :desc)
-    when 'received'
+    when "received"
       # Réservations approuvées pour les plats de l'utilisateur
       @bookings = current_user.received_bookings.includes(dish: :user)
-                            .where(status: 'approved')
+                            .where(status: "approved")
                             .order(created_at: :desc)
-    when 'my_bookings'
+    when "my_bookings"
       # Toutes les réservations faites par l'utilisateur
       @bookings = current_user.bookings.includes(dish: :user)
                             .order(created_at: :desc)
@@ -28,7 +28,7 @@ class BookingsController < ApplicationController
     @dish = Dish.find(params[:dish_id])
     @booking = current_user.bookings.build(booking_params)
     @booking.dish = @dish
-    @booking.status = 'pending'
+    @booking.status = "pending"
 
     if @booking.save
       # Créer une notification pour le propriétaire du plat
@@ -36,41 +36,41 @@ class BookingsController < ApplicationController
         user: @dish.user,
         booking: @booking,
         message: "Nouvelle réservation pour votre plat #{@dish.name}",
-        notification_type: 'new_booking'
+        notification_type: "new_booking"
       )
-      redirect_to bookings_path, notice: 'Votre réservation a été envoyée et est en attente de confirmation.'
+      redirect_to bookings_path, notice: "Votre réservation a été envoyée et est en attente de confirmation."
     else
-      redirect_to dish_path(@dish), alert: 'Impossible de créer la réservation.'
+      redirect_to dish_path(@dish), alert: "Impossible de créer la réservation."
     end
   end
 
   def approve
-    if @booking.update(status: 'approved')
+    if @booking.update(status: "approved")
       # Créer une notification pour l'utilisateur qui a réservé
       Notification.create(
         user: @booking.user,
         booking: @booking,
         message: "Votre réservation pour #{@booking.dish.name} a été approuvée !",
-        notification_type: 'booking_approved'
+        notification_type: "booking_approved"
       )
-      redirect_to bookings_path(filter: 'pending'), notice: 'Réservation approuvée.'
+      redirect_to bookings_path(filter: "pending"), notice: "Réservation approuvée."
     else
-      redirect_to bookings_path(filter: 'pending'), alert: 'Impossible d\'approuver la réservation.'
+      redirect_to bookings_path(filter: "pending"), alert: "Impossible d'approuver la réservation."
     end
   end
 
   def reject
-    if @booking.update(status: 'rejected')
+    if @booking.update(status: "rejected")
       # Créer une notification pour l'utilisateur qui a réservé
       Notification.create(
         user: @booking.user,
         booking: @booking,
         message: "Votre réservation pour #{@booking.dish.name} a été rejetée.",
-        notification_type: 'booking_rejected'
+        notification_type: "booking_rejected"
       )
-      redirect_to bookings_path(filter: 'pending'), notice: 'Réservation rejetée.'
+      redirect_to bookings_path(filter: "pending"), notice: "Réservation rejetée."
     else
-      redirect_to bookings_path(filter: 'pending'), alert: 'Impossible de rejeter la réservation.'
+      redirect_to bookings_path(filter: "pending"), alert: "Impossible de rejeter la réservation."
     end
   end
 
@@ -86,7 +86,7 @@ class BookingsController < ApplicationController
 
   def ensure_owner
     unless @booking.dish.user == current_user
-      redirect_to bookings_path, alert: 'Vous n\'êtes pas autorisé à effectuer cette action.'
+      redirect_to bookings_path, alert: "Vous n'êtes pas autorisé à effectuer cette action."
     end
   end
-end 
+end

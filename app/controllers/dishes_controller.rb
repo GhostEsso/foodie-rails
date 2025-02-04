@@ -1,7 +1,7 @@
 class DishesController < ApplicationController
-  before_action :authenticate_user!, except: [:home]
-  before_action :set_dish, only: [:show, :edit, :update]
-  before_action :ensure_owner!, only: [:edit, :update]
+  before_action :authenticate_user!, except: [ :home ]
+  before_action :set_dish, only: [ :show, :edit, :update ]
+  before_action :ensure_owner!, only: [ :edit, :update ]
 
   def home
     redirect_to dishes_path if user_signed_in?
@@ -9,9 +9,9 @@ class DishesController < ApplicationController
 
   def index
     @per_page = 6
-    @page = [params[:page].to_i, 1].max
+    @page = [ params[:page].to_i, 1 ].max
     @total_dishes = Dish.count
-    @total_pages = [@total_dishes.to_f / @per_page, 1].max.ceil
+    @total_pages = [ @total_dishes.to_f / @per_page, 1 ].max.ceil
 
     @dishes = Dish.includes(:bookings, user: { apartment: :building })
                  .with_attached_photos
@@ -20,15 +20,15 @@ class DishesController < ApplicationController
                  .limit(@per_page)
 
     if request.xhr?
-      render partial: 'dishes_list', locals: { dishes: @dishes }
+      render partial: "dishes_list", locals: { dishes: @dishes }
     end
   end
 
   def my_dishes
     @per_page = 6
-    @page = [params[:page].to_i, 1].max
+    @page = [ params[:page].to_i, 1 ].max
     @total_dishes = current_user.dishes.count
-    @total_pages = [@total_dishes.to_f / @per_page, 1].max.ceil
+    @total_pages = [ @total_dishes.to_f / @per_page, 1 ].max.ceil
 
     @dishes = current_user.dishes
                         .includes(:bookings)
@@ -38,7 +38,7 @@ class DishesController < ApplicationController
                         .limit(@per_page)
 
     if request.xhr?
-      render partial: 'dishes_list', locals: { dishes: @dishes }
+      render partial: "dishes_list", locals: { dishes: @dishes }
     end
   end
 
@@ -52,9 +52,9 @@ class DishesController < ApplicationController
 
   def create
     @dish = current_user.dishes.build(dish_params)
-    
+
     if @dish.save
-      redirect_to dishes_path, notice: 'Votre plat a été ajouté avec succès!'
+      redirect_to dishes_path, notice: "Votre plat a été ajouté avec succès!"
     else
       render :new, status: :unprocessable_entity
     end
@@ -65,7 +65,7 @@ class DishesController < ApplicationController
 
   def update
     if @dish.update(dish_params)
-      redirect_to @dish, notice: 'Votre plat a été mis à jour avec succès!'
+      redirect_to @dish, notice: "Votre plat a été mis à jour avec succès!"
     else
       render :edit, status: :unprocessable_entity
     end
@@ -86,4 +86,4 @@ class DishesController < ApplicationController
   def dish_params
     params.require(:dish).permit(:name, :description, :portions, :price, :ingredients, photos: [])
   end
-end 
+end

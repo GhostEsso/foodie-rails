@@ -39,4 +39,4 @@ class SettingsController < ApplicationController
   def avatar_params
     params.require(:user).permit(:avatar)
   end
-end 
+end

@@ -14,4 +14,4 @@ module Admin
       redirect_to admin_dishes_path, notice: "Le plat a été supprimé avec succès."
     end
   end
-end 
+end

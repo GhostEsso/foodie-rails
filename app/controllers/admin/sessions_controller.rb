@@ -1,11 +1,11 @@
 module Admin
   class SessionsController < ApplicationController
-    layout 'admin'
+    layout "admin"
 
     # Ces credentials seront les mêmes en développement et en production
     ADMIN_CREDENTIALS = {
-      email: 'admin@foody.fr',
-      password: 'admin123!'
+      email: "admin@foody.fr",
+      password: "admin123!"
     }.freeze
 
     helper_method :admin_signed_in?
@@ -17,16 +17,16 @@ module Admin
     def create
       if valid_admin_credentials?
         session[:admin_signed_in] = true
-        redirect_to admin_root_path, notice: 'Connexion réussie!'
+        redirect_to admin_root_path, notice: "Connexion réussie!"
       else
-        flash.now[:alert] = 'Email ou mot de passe incorrect.'
+        flash.now[:alert] = "Email ou mot de passe incorrect."
         render :new, status: :unprocessable_entity
       end
     end
 
     def destroy
       session[:admin_signed_in] = false
-      redirect_to admin_login_path, notice: 'Déconnexion réussie!'
+      redirect_to admin_login_path, notice: "Déconnexion réussie!"
     end
 
     private
@@ -40,4 +40,4 @@ module Admin
       params[:password] == ADMIN_CREDENTIALS[:password]
     end
   end
-end 
+end

@@ -13,7 +13,7 @@ class MessagesController < ApplicationController
       end
     else
       respond_to do |format|
-        format.turbo_stream { 
+        format.turbo_stream {
           render turbo_stream: turbo_stream.replace(
             "new_message",
             partial: "messages/form",
@@ -34,4 +34,4 @@ class MessagesController < ApplicationController
   def message_params
     params.require(:message).permit(:content)
   end
-end 
+end

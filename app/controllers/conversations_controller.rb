@@ -1,6 +1,6 @@
 class ConversationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_conversation, only: [:show]
+  before_action :set_conversation, only: [ :show ]
 
   def index
     @conversations = current_user.conversations
@@ -32,4 +32,4 @@ class ConversationsController < ApplicationController
   def conversation_params
     params.require(:conversation).permit(:dish_id, :receiver_id)
   end
-end 
+end

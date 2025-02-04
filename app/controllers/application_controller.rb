@@ -20,7 +20,7 @@ class ApplicationController < ActionController::Base
 
   def authenticate_user!
     unless user_signed_in?
-      redirect_to login_path, alert: 'Vous devez être connecté pour accéder à cette page.'
+      redirect_to login_path, alert: "Vous devez être connecté pour accéder à cette page."
     end
   end
 end

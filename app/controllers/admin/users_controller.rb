@@ -33,4 +33,4 @@ module Admin
       params.require(:user).permit(:email, :first_name, :last_name)
     end
   end
-end 
+end

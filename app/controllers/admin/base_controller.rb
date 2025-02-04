@@ -1,7 +1,7 @@
 module Admin
   class BaseController < ApplicationController
     before_action :authenticate_admin!
-    layout 'admin'
+    layout "admin"
 
     private
 
@@ -16,4 +16,4 @@ module Admin
     end
     helper_method :admin_signed_in?
   end
-end 
+end

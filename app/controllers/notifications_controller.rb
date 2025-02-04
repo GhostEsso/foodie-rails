@@ -5,4 +5,4 @@ class NotificationsController < ApplicationController
     current_user.mark_notifications_as_read!
     head :ok
   end
-end 
+end
